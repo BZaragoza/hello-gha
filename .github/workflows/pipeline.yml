@@ -11,13 +11,17 @@ on:
       - synchronize
 
 jobs:
-  deploy:
+  avoid-redundancy:
     runs-on: ubuntu-latest
     steps:
       - name: Cancel previous redundant builds
         uses: styfle/cancel-workflow-action@0.10.0
         with:
           access_token: ${{ github.token }}
+  
+  lint:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -28,8 +32,29 @@ jobs:
         run: npm ci
       - name: Run linter
         run: npm run lint
+
+  test:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install deps
+        run: npm ci
       - name: Run tests
         run: npm test
+
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Deploy to Heroku
         if: ${{ github.event_name == 'push' }}
         uses: akhileshns/heroku-deploy@v3.12.12
