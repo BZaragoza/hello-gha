@@ -33,7 +33,7 @@ jobs:
         run: npm ci
   
   lint:
-    needs: [install]
+    needs: [install-deps]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -49,7 +49,7 @@ jobs:
         run: npm run lint
 
   test:
-    needs: [install, lint]
+    needs: [install-deps, lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
