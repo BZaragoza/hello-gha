@@ -1,7 +1,6 @@
 import { readFileSync } from 'fs'
 import express from 'express'
 
-const data = JSON.parse(readFileSync('./data.json', 'utf8')) // eslint-disable-line
 const metadata = JSON.parse(readFileSync('./package.json'))
 const { version } = metadata
 
